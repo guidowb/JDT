@@ -8,4 +8,9 @@
 		<js>webjar:angular-ui-router/0.2.13/angular-ui-router.min.js</js>
 		<js>webjar:angular-ui-bootstrap/0.12.1/ui-bootstrap.min.js</js>
 	</group>
+	<group name="moby-application">
+		<css>file:${project.basedir}/src/main/resources/static/**.css</css>
+		<js>file:${project.basedir}/src/main/resources/static/js/*.js</js>
+		<js>file:${project.basedir}/src/main/resources/static/js/controllers/*.js</js>
+	</group>
 </groups>
