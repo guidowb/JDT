@@ -1,0 +1,36 @@
+<script type="text/ng-template" id="javaStatement">
+    <div ng-switch="statement.statement">
+		<div ng-switch-default>
+			<span class="error keyword">unknown statement</span>
+			<span class="error name">{{statement.statement}}</span><span class="punctuation">;</span>
+		</div>
+		<div ng-switch-when="package">
+			<span class="keyword">package</span>
+			<span class="name">{{statement.name}}</span><span class="punctuation">;</span>
+			<br/><br/>
+		</div>
+		<div ng-switch-when="import">
+			<span class="keyword">import</span>
+			<span class="name">{{statement.name}}</span><span class="punctuation">;</span>
+		</div>
+		<div ng-switch-when="class">
+			<br/>
+			<span class="keyword" ng-repeat="modifier in statement.modifiers">{{modifier}}</span>
+			<span class="keyword">class</span>
+			<span class="name">{{statement.name}}</span>
+		</div>
+		<div ng-switch-when="if">
+			<b>if</b> <i>{{statement.condition}}</i><br/>
+			<b>then</b>
+			<div ng-if="statement.else">
+				<b>else</b>
+			</div>
+		</div>
+		<div ng-switch-when="while">
+			<b>while</b> <i>condition</i> <b>do</b>
+        	<div ng-repeat="statement in statement.block" ng-include="'javaStatement'"></div>
+		</div>
+    </div>
+</script>
+
+<div ng-repeat="statement in statements" ng-include="'javaStatement'"></div>

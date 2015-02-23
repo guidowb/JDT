@@ -1,0 +1,17 @@
+.error {
+	color: red;
+}
+
+.keyword {
+	font-weight: bold;
+}
+
+.name {
+}
+
+.comment {
+	font-style: italic;
+}
+
+.punctuation {
+}
