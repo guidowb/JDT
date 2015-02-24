@@ -6,6 +6,10 @@
 	font-weight: bold;
 }
 
+.annotation {
+	font-style: italic;
+}
+
 .name {
 }
 
@@ -14,4 +18,8 @@
 }
 
 .punctuation {
+}
+
+.indent {
+	padding: 0px 0px 0px 30px;
 }

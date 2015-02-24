@@ -13,7 +13,6 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
-import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.Type;
@@ -85,32 +84,44 @@ public class JavaParser extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclaration decl) {
+		
+		// Interface or class definition
 		Statement statement = new Statement(decl.isInterface() ? "interface" : "class");
 		statement.put("name", decl.getName().getFullyQualifiedName());
+		add(statement);
 		
+		// Annotations and modifiers (we split them, even though AST does not)
+		List<String> annotations = new ArrayList<String>();
 		List<String> modifiers = new ArrayList<String>();
-		int flags = decl.getModifiers();
-		if (Modifier.isPublic(flags)) modifiers.add("public");
-		if (Modifier.isProtected(flags)) modifiers.add("protected");
-		if (Modifier.isPrivate(flags)) modifiers.add("private");
-		if (Modifier.isStatic(flags)) modifiers.add("static");
-		if (Modifier.isFinal(flags)) modifiers.add("final");
-		if (Modifier.isNative(flags)) modifiers.add("native");
-		if (Modifier.isSynchronized(flags)) modifiers.add("synchronized");
-		if (Modifier.isAbstract(flags)) modifiers.add("abstract");
-		if (Modifier.isTransient(flags)) modifiers.add("transient");
-		if (Modifier.isVolatile(flags)) modifiers.add("volatile");
-		statement.put("modifiers", modifiers);
+		for (Object modifier : decl.modifiers()) {
+			String modifierString = modifier.toString();
+			if (modifierString.startsWith("@")) annotations.add(modifierString.substring(1));
+			else modifiers.add(modifierString);
+		}
+		if (!annotations.isEmpty()) statement.put("annotations", annotations);
+		if (!modifiers.isEmpty()) statement.put("modifiers", modifiers);
 
+		// Base class
 		Type superClass = decl.getSuperclassType();
 		if (superClass != null)
 			if (superClass instanceof SimpleType) statement.put("extends", ((SimpleType) superClass).getName().getFullyQualifiedName());
 			else System.err.println("superClass is not a SimpleType but " + superClass.getClass().getSimpleName());
 
-		// TODO - annotations (modifiers?)
-		// TODO - interfaces
-		// TODO - body
-		add(statement);
+		// Interfaces
+		List<String> interfaces = new ArrayList<String>();
+		for (Object interfaceType : decl.superInterfaceTypes()) {
+			if (interfaceType instanceof SimpleType) interfaces.add(((SimpleType) interfaceType).getName().getFullyQualifiedName());
+			else System.err.println("interfaceType is not a SimpleType but " + interfaceType.getClass().getSimpleName());
+		}
+		if (!interfaces.isEmpty()) statement.put("interfaces", interfaces);
+
+		// TODO - handle these
+		System.out.println("body declarations");
+		for (Object d : decl.bodyDeclarations()) System.out.println("   " + d.toString());
+		if (decl.getJavadoc() != null) {
+			System.out.println("javadoc");
+			System.out.println("   " + decl.getJavadoc().toString());
+		}
 		return false;
 	}
 

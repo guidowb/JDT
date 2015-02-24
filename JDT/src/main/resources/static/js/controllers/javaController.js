@@ -1,8 +1,11 @@
 mobyControllers.controller('javaController', ['$scope', '$http',
 	function ($scope, $http) {
-		$http.get('/api/java').success(function(data) {
-			$scope.unit = data;
-			$scope.statements = $scope.unit['statements'];
-		});
+		$scope.open = function(filename) {
+			url = '/api/java?file=' + filename;
+			$http.get(url).success(function(data) {
+				$scope.unit = data;
+				$scope.statements = $scope.unit['statements'];
+			});
+		}
 	}
 ]);

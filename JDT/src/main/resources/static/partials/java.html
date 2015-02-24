@@ -15,9 +15,20 @@
 		</div>
 		<div ng-switch-when="class">
 			<br/>
-			<span class="keyword" ng-repeat="modifier in statement.modifiers">{{modifier}}</span>
+			<div ng-repeat="annotation in statement.annotations">
+				<span class="annotation">@{{annotation}}</span>
+			</div>
+			<span class="keyword" ng-repeat="modifier in statement.modifiers">{{modifier}} </span>
 			<span class="keyword">class</span>
 			<span class="name">{{statement.name}}</span>
+			<div ng-if="statement.extends" class="indent">
+				<span class="keyword">extends</span>
+				<span class="name">{{statement.extends}}</span>
+			</div>
+			<div ng-repeat="interface in statement.interfaces" class="indent">
+				<span class="keyword">implements</span>
+				<span class="name">{{interface}}</span>
+			</div>
 		</div>
 		<div ng-switch-when="if">
 			<b>if</b> <i>{{statement.condition}}</i><br/>
@@ -33,4 +44,7 @@
     </div>
 </script>
 
+<button ng-click="open('src/test/java/org/guidowb/moby/test/TestClass.java')">TestClass</button>
+<button ng-click="open('src/main/java/org/guidowb/moby/api/JavaService.java')">JavaService</button>
+<button ng-click="open('src/main/java/org/guidowb/moby/parsers/JavaParser.java')">JavaParser</button>
 <div ng-repeat="statement in statements" ng-include="'javaStatement'"></div>
