@@ -11,6 +11,11 @@
 }
 
 .name {
+	white-space-collapse: discard;
+}
+
+.name div {
+	display: inline;
 }
 
 .comment {

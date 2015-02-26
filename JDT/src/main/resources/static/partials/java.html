@@ -1,4 +1,4 @@
-<script type="text/ng-template" id="javaStatement">
+<script type="text/ng-template" id="javaStatementOld">
     <div ng-switch="statement.statement">
 		<div ng-switch-default>
 			<span class="error keyword">unknown statement</span>
@@ -16,7 +16,7 @@
 		<div ng-switch-when="class">
 			<br/>
 			<div ng-repeat="annotation in statement.annotations">
-				<span class="annotation">@{{annotation}}</span>
+				<span class="annotation">@{{annotation.name}}</span>
 			</div>
 			<span class="keyword" ng-repeat="modifier in statement.modifiers">{{modifier}} </span>
 			<span class="keyword">class</span>
@@ -44,7 +44,71 @@
     </div>
 </script>
 
-<button ng-click="open('src/test/java/org/guidowb/moby/test/TestClass.java')">TestClass</button>
-<button ng-click="open('src/main/java/org/guidowb/moby/api/JavaService.java')">JavaService</button>
-<button ng-click="open('src/main/java/org/guidowb/moby/parsers/JavaParser.java')">JavaParser</button>
-<div ng-repeat="statement in statements" ng-include="'javaStatement'"></div>
+<script type="text/ng-template" id="qualifiedName">
+	<div ng-if="name.qualifier" ng-init="name=name.qualifier"><div ng-include="'qualifiedName'"></div>.</div>
+	<div ng-if="name.name" ng-init="name=name.name" ng-include="'qualifiedName'"></div>
+	<div ng-if="name.identifier" ng-init="name=name.identifier">{{name}}</div>
+</script>
+
+<script type="text/ng-template" id="javaStatement">
+    <div ng-switch="key">
+		<div ng-switch-when="package">
+			<span class="keyword">package</span>
+			<span class="name" ng-init="name=value.name" ng-include="'qualifiedName'"></span><span class="punctuation">;</span>
+			<br/><br/>
+		</div>
+		<div ng-switch-when="imports">
+			<div ng-repeat="import in value">
+				<span class="keyword">import</span>
+				<span class="name" ng-init="name=value.name" ng-include="'qualifiedName'"></span><span class="punctuation">;</span>
+			</div>
+		</div>
+		<div ng-switch-when="_class">
+		</div>
+		<div ng-switch-default>
+			<span class="error keyword">unknown statement</span>
+			<span class="error name">{{key}}</span><span class="punctuation">;</span>
+		</div>
+		<div ng-switch-when="class">
+			<br/>
+			<div ng-repeat="annotation in statement.annotations">
+				<span class="annotation">@{{annotation.name}}</span>
+			</div>
+			<span class="keyword" ng-repeat="modifier in statement.modifiers">{{modifier}} </span>
+			<span class="keyword">class</span>
+			<span class="name">{{statement.name}}</span>
+			<div ng-if="statement.extends" class="indent">
+				<span class="keyword">extends</span>
+				<span class="name">{{statement.extends}}</span>
+			</div>
+			<div ng-repeat="interface in statement.interfaces" class="indent">
+				<span class="keyword">implements</span>
+				<span class="name">{{interface}}</span>
+			</div>
+		</div>
+		<div ng-switch-when="if">
+			<b>if</b> <i>{{statement.condition}}</i><br/>
+			<b>then</b>
+			<div ng-if="statement.else">
+				<b>else</b>
+			</div>
+		</div>
+		<div ng-switch-when="while">
+			<b>while</b> <i>condition</i> <b>do</b>
+        	<div ng-repeat="statement in statement.block" ng-include="'javaStatement'"></div>
+		</div>
+    </div>
+</script>
+
+<script type="text/ng-template" id="javaBlock">
+	<div ng-repeat="(key, value) in block" ng-include="'javaStatement'"></div>
+</script>
+
+<div role="navigation">
+	<button ng-click="open('src/test/java/org/guidowb/moby/test/TestClass.java')">TestClass</button>
+	<button ng-click="open('src/main/java/org/guidowb/moby/api/JavaService.java')">JavaService</button>
+	<button ng-click="open('src/main/java/org/guidowb/moby/parsers/JavaParser.java')">JavaParser</button>
+</div>
+<div>
+	<div ng-include="'javaBlock'"></div>
+</div>
